@@ -11,13 +11,23 @@ class EventbriteICS {
 
     private $config = array();
     private $eventbrite_client;
+    private $events;
     private $logFh;
     private $outputFileName = "eventbrite.ics";
-    
+    private $timezone = "America/Los_Angeles";
+    private $pubdate;
+    private $today;
+    private $begin_date;
+    private $end_date;
 
     function __construct() {
         // Make sure we're doing UTF-8 - important for iCalendar
         mb_internal_encoding("UTF-8");
+        
+        $this->pubdate = strtotime("Now");
+        $this->today = date('Ymd', $pubdate);
+        $this->setBeginDate(strtotime('-30 day', strtotime("Now")));
+        $this->setEndDate(strtotime('+30 day', strtotime("Now")));
 
         // Get the configuration object
         $this->config = new Config();
@@ -29,6 +39,7 @@ class EventbriteICS {
             , 'user_key' => $this->config->getParam('user_key')
         );
 
+
         // Some other defaults from config
         if ($this->config->getParam('output_file_name')) {
             $this->outputFileName = $this->config->getParam('output_file_name');
@@ -36,9 +47,9 @@ class EventbriteICS {
         if ($this->config->getParam('log_file_name')) {
             $this->logFileName = $this->config->getParam('log_file_name');
         }
-        
+
         $this->ical_util = new ICalUtil();
-        
+
         // Initialize the API client
         //  Eventbrite API / Application key (REQUIRED)
         //  http://www.eventbrite.com/api/key/
@@ -49,7 +60,25 @@ class EventbriteICS {
 
     public function setConfig($config = array()) {
         $this->config = $config;
+        $this->eventbrite_client->auth_tokens = $config;
     }
+
+    public function setEventbrite($eventbrite) {
+        $this->eventbrite_client = $eventbrite;
+    }
+
+    public function setBeginDate($date){
+        $this->begin_date = $date;
+    }
+    
+    public function setEndDate($date) {
+        $this->end_date = $date;
+    }
+    
+    public function getEvents() {
+        return $this->events;
+    }
+
     private function sendHeaders() {
         header('Content-type: text/calendar; charset=utf-8');
         header('Content-Disposition: attachment; filename="eventbrite.ics"');
@@ -69,35 +98,45 @@ class EventbriteICS {
             $this->logFh = false;
         }
 
+
         // For more information about the features that are available through 
         // the Eventbrite API, see http://developer.eventbrite.com/doc/
         try {
-            $eventbrite_events = $this->eventbrite_client->user_list_events();
+            // This actually uses the __call method to fetch the data from the
+            // web service (JSON) and decodes the value back into the array
+            // of events ...
+            $this->events = $this->eventbrite_client->user_list_events();
         } catch (Exception $e) {
             $this->writeLog("Problem with Eventbrite: " . $e);
-            $eventbrite_events = false;
+            $this->events = false;
         }
 
         $events = "BEGIN:VCALENDAR" . CRLF;
         $events .= "VERSION:2.0" . CRLF;
         $events .= "METHOD:PUBLISH" . CRLF;
-        
+
         // FIXME - this should be an ID for the calendar - needs to
         //         be configurable.
-        $events .= "PRODID:-//PMI SFBAC//PMICalendar//EN" . CRLF;
+        $events .= "PRODID:-//EventbriteICS//EventbriteCalendar//EN" . CRLF;
 
         // More elements from Google Calendar
         $events .= "CALSCALE:GREGORIAN" . CRLF;
-        
+
         // FIXME - make the name of the calendar a config value
+        //         or look this up from Eventbrite
         $events .= "X-WR-CALNAME:PMI-SFBAC Eventbrite Calendar" . CRLF;
-        $events .= "X-WR-TIMEZONE:America/Los_Angeles" . CRLF;
+        
+        // And the Time Zone should come from Eventbrite and be consistent
+        // throughout ...
+        $events .= "X-WR-TIMEZONE:" . $this->timezone . CRLF;
+        
+        // This probably can come from Eventbrite too
         $events .= "X-WR-CALDESC:This is the PMI-SFBAC Eventbrite Calendar" . CRLF;
 
         // Time zone definition (from Google Calendar) ...
         $events .= "BEGIN:VTIMEZONE" . CRLF;
-        $events .= "TZID:America/Los_Angeles" . CRLF;
-        $events .= "X-LIC-LOCATION:America/Los_Angeles" . CRLF;
+        $events .= "TZID:" . $this->timezone . CRLF;
+        $events .= "X-LIC-LOCATION:" . $this->timezone . CRLF;
         $events .= "BEGIN:DAYLIGHT" . CRLF;
         $events .= "TZOFFSETFROM:-0800" . CRLF;
         $events .= "TZOFFSETTO:-0700" . CRLF;
@@ -114,19 +153,15 @@ class EventbriteICS {
         $events .= "END:STANDARD" . CRLF;
         $events .= "END:VTIMEZONE" . CRLF;
 
-        $pubdate = strtotime("Now");
-        $today = date('Ymd', $pubdate);
-        $begin_date = strtotime('-30 day', strtotime("Now"));
-        $end_date = strtotime('+30 day', strtotime("Now"));
 
-        $this->writeLog("begin date " . date('Y-M-d', $begin_date));
-        $this->writeLog("end date " . date('Y-M-d', $end_date));
+        $this->writeLog("begin date " . date('Y-M-d', $this->begin_date));
+        $this->writeLog("end date " . date('Y-M-d', $this->end_date));
 
         $i = 0;
-        if ($eventbrite_events) {
-            #print_r($events->events);
+        if ($this->events) {
+            //print_r($events->events);
             # Loop through the feed items and format an event for each
-            foreach ($eventbrite_events->events as $event) {
+            foreach ($this->events->events as $event) {
                 // First we want to make sure not to display draft events ...
                 if ($event->event->status == "Draft") {
                     $this->writeLog("Draft event " . $event->event->title . "\n");
@@ -144,13 +179,13 @@ class EventbriteICS {
 
                 //writeLog($begin_date . " < " . $start_date . " > " . $end_date);
                 // Check if within next 30 days ...
-                if (($begin_date > $start_date) || ($start_date > $end_date)) {
-                    $this->writeLog(date('Y-M-d', $start_date) . " not in range " . $event->event->title);
-                    continue;
-                } else {
-                    $this->writeLog(date('Y-M-d', $start_date) . " in range " . $event->event->title);
-                }
-
+                if (($this->begin_date > $start_date) || ($start_date > $this->end_date)) {
+                  $this->writeLog(date('Y-M-d', $start_date) . " start date not in range " . $event->event->title);
+                  continue;
+                  } else {
+                  $this->writeLog(date('Y-M-d', $start_date) . " start date in range " . $event->event->title);
+                  }
+                
                 $start = date('Ymd\THis', strtotime($event->event->start_date));
                 $end = date('Ymd\THis', strtotime($event->event->end_date));
                 $created = date('Ymd\THis', strtotime($event->event->created));
@@ -182,21 +217,24 @@ class EventbriteICS {
             # Make one for now containing the error message
             $events .= "BEGIN:VEVENT" . CRLF;
             $events .= "URL;VALUE=URI:http://www.pmi-sfbac.org/" . CRLF;
-            $events .= "DTSTART;TZID=America/Los_Angeles:" . $today . "T120000" . CRLF;
-            $events .= "DTEND;TZID=America/Los_Angeles:" . $today . "T163000" . CRLF;
+            $events .= "DTSTART;TZID=" . $this->timezone . ":" . $today . "T120000" . CRLF;
+            $events .= "DTEND;TZID=" . $this->timezone . ":" . $today . "T163000" . CRLF;
             $events .= "SUMMARY:No rows found" . CRLF;
             $events .= "END:VEVENT" . CRLF;
         }
-
+        $this->writeLog("------");
+        $this->writeLog($events);
+        $this->writeLog("------");
         if (LOGGING) {
             $this->logFh = fclose($this->logFh);
         }
 
         $events .= "END:VCALENDAR";
+
         return $events;
     }
-    
-    public function sendICS(){
+
+    public function sendICS() {
         $this->sendHeaders();
         echo $this->readEventbrite();
     }

@@ -21,13 +21,18 @@ class EventbriteICSTest extends PHPUnit_Framework_TestCase {
      * @var EventbriteICS
      */
     protected $object;
+    
+    private $test_data;
 
+    static private $messages = array();
+    
     /**
      * Sets up the fixture, for example, opens a network connection.
      * This method is called before a test is executed.
      */
     protected function setUp() {
         $this->object = new EventbriteICS;
+        $this->test_data = json_decode('');
     }
 
     /**
@@ -35,6 +40,7 @@ class EventbriteICSTest extends PHPUnit_Framework_TestCase {
      * This method is called after a test is executed.
      */
     protected function tearDown() {
+         echo implode("\n", self::$messages);
         $this->object = null;
     }
 
@@ -43,7 +49,7 @@ class EventbriteICSTest extends PHPUnit_Framework_TestCase {
      */
     public function testReadEventbrite() {
         // This is what the default is when there is no API key ...
-        $expected = "BEGIN:VCALENDAR" . CRLF
+        $startsWith = "BEGIN:VCALENDAR" . CRLF
                 . "VERSION:2.0" . CRLF
                 . "METHOD:PUBLISH" . CRLF
                 . "PRODID:-//PMI SFBAC//PMICalendar//EN" . CRLF
@@ -72,49 +78,95 @@ class EventbriteICSTest extends PHPUnit_Framework_TestCase {
                 . "BEGIN:VEVENT" . CRLF
                 // This should be the URL of the calendar
                 . "URL;VALUE=URI:http://www.pmi-sfbac.org/" . CRLF
-                // These next two need to be updated to be for today ...
-                . "DTSTART;TZID=America/Los_Angeles:20121122T120000" . CRLF
-                . "DTEND;TZID=America/Los_Angeles:20121122T163000" . CRLF
-                . "SUMMARY:No rows found" . CRLF
+        ;
+
+        $endsWith = "SUMMARY:No rows found" . CRLF
                 . "END:VEVENT" . CRLF
                 . "END:VCALENDAR";
+
         $result = $this->object->readEventbrite();
-        $this->assertEquals($expected, $result, 'Problem with iCal data');
+        $this->assertContains($startsWith, $result, 'Problem with iCal data');
+        $this->assertContains($endsWith, $result, 'Problem with iCal data');
     }
 
     public function testReadEventbriteWithKey() {
-        $this->object->setConfig(array('app_key' => 'V6KZF7NVIL7KPHPD6H',
-            'user_key' => '131639172020232618306'));
-        $expected = "BEGIN:VCALENDAR" . CRLF
-                . "VERSION:2.0" . CRLF
-                . "METHOD:PUBLISH" . CRLF
-                . "PRODID:-//PMI SFBAC//PMICalendar//EN" . CRLF
-                . "CALSCALE:GREGORIAN" . CRLF
-                . "X-WR-CALNAME:PMI-SFBAC Eventbrite Calendar" . CRLF
-                . "X-WR-TIMEZONE:America/Los_Angeles" . CRLF
-                . "X-WR-CALDESC:This is the PMI-SFBAC Eventbrite Calendar" . CRLF
-                . "BEGIN:VTIMEZONE" . CRLF
-                . "TZID:America/Los_Angeles" . CRLF
-                . "X-LIC-LOCATION:America/Los_Angeles" . CRLF
-                . "BEGIN:DAYLIGHT" . CRLF
-                . "TZOFFSETFROM:-0800" . CRLF
-                . "TZOFFSETTO:-0700" . CRLF
-                . "TZNAME:PDT" . CRLF
-                . "DTSTART:19700308T020000" . CRLF
-                . "RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=2SU" . CRLF
-                . "END:DAYLIGHT" . CRLF
-                . "BEGIN:STANDARD" . CRLF
-                . "TZOFFSETFROM:-0700" . CRLF
-                . "TZOFFSETTO:-0800" . CRLF
-                . "TZNAME:PST" . CRLF
-                . "DTSTART:19701101T020000" . CRLF
-                . "RRULE:FREQ=YEARLY;BYMONTH=11;BYDAY=1SU" . CRLF
-                . "END:STANDARD" . CRLF
-                . "END:VTIMEZONE" . CRLF
-                . "BEGIN:VEVENT" . CRLF
-                ;
+        
+        
+        // Mock the Eventbrite object so we don't have to show our hand ...
+        $this->object->setEventbrite(new MockEventbrite()); 
+        $this->object->setBeginDate(strtotime("2012-11-01"));
+        $this->object->setEndDate(strtotime("2013-01-01"));
+
+        // FIXME - should probably do a regex instead of hardwiring all this
+        //         stuff.
+        //         
+        //         Maybe do a mock for the API call as well, since we're not
+        //         testing the Eventbrite object here.
+        $expects = "BEGIN:VCALENDAR" . CRLF;
+        $expects .= "VERSION:2.0" . CRLF;
+        $expects .= "METHOD:PUBLISH" . CRLF;
+        $expects .= "PRODID:-//PMI SFBAC//PMICalendar//EN" . CRLF;
+        $expects .= "CALSCALE:GREGORIAN" . CRLF;
+        $expects .= "X-WR-CALNAME:PMI-SFBAC Eventbrite Calendar" . CRLF;
+        $expects .= "X-WR-TIMEZONE:America/Los_Angeles" . CRLF;
+        $expects .= "X-WR-CALDESC:This is the PMI-SFBAC Eventbrite Calendar" . CRLF;
+        $expects .= "BEGIN:VTIMEZONE" . CRLF;
+        $expects .= "TZID:America/Los_Angeles" . CRLF;
+        $expects .= "X-LIC-LOCATION:America/Los_Angeles" . CRLF;
+        $expects .= "BEGIN:DAYLIGHT" . CRLF;
+        $expects .= "TZOFFSETFROM:-0800" . CRLF;
+        $expects .= "TZOFFSETTO:-0700" . CRLF;
+        $expects .= "TZNAME:PDT" . CRLF;
+        $expects .= "DTSTART:19700308T020000" . CRLF;
+        $expects .= "RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=2SU" . CRLF;
+        $expects .= "END:DAYLIGHT" . CRLF;
+        $expects .= "BEGIN:STANDARD" . CRLF;
+        $expects .= "TZOFFSETFROM:-0700" . CRLF;
+        $expects .= "TZOFFSETTO:-0800" . CRLF;
+        $expects .= "TZNAME:PST" . CRLF;
+        $expects .= "DTSTART:19701101T020000" . CRLF;
+        $expects .= "RRULE:FREQ=YEARLY;BYMONTH=11;BYDAY=1SU" . CRLF;
+        $expects .= "END:STANDARD" . CRLF;
+        $expects .= "END:VTIMEZONE" . CRLF;
+        $expects .= "BEGIN:VEVENT" . CRLF;
+        $expects .= "ORGANIZER;CN=PMI San Francisco Bay Area Chapter:MAILTO:eventbrite@pmi-sfbac.org" . CRLF;
+        $expects .= "UID:908163459" . CRLF;
+        $expects .= "URL:Array" . CRLF;
+        $expects .= "CATEGORIES:" . CRLF;
+        $expects .= "CLASS:Public" . CRLF;
+        $expects .= "CREATED;TZID=US/Eastern:20121103T124706" . CRLF;
+        $expects .= "DTSTART;TZID=US/Eastern:20121231T200000Z" . CRLF;
+        $expects .= "DTEND;TZID=US/Eastern:20120101T060000Z" . CRLF;
+        $expects .= "SUMMARY:Best NYC New Year's Party" . CRLF;
+        $expects .= "DESCRIPTION:Come spend New Year's Eve with us!" . CRLF;
+        $expects .= "X-ALT-DESC;FMTTYPE=text/html:Come spend New Year's Eve with us!" . CRLF;
+        $expects .= "LAST-MODIFIED;TZID=US/Eastern:20120109T101215" . CRLF;
+        $expects .= "STATUS:" . CRLF;
+        $expects .= "END:VEVENT" . CRLF;
+        $expects .= "BEGIN:VEVENT" . CRLF;
+        $expects .= "ORGANIZER;CN=PMI San Francisco Bay Area Chapter:MAILTO:eventbrite@pmi-sfbac.org" . CRLF;
+        $expects .= "UID:888888" . CRLF;
+        $expects .= "URL:Array" . CRLF;
+        $expects .= "CATEGORIES:" . CRLF;
+        $expects .= "CLASS:Public" . CRLF;
+        $expects .= "CREATED;TZID=US/Eastern:20121103T124706" . CRLF;
+        $expects .= "DTSTART;TZID=US/Eastern:20121231T200000Z" . CRLF;
+        $expects .= "DTEND;TZID=US/Eastern:20120101T060000Z" . CRLF;
+        $expects .= "SUMMARY:Best NYC New Year's Party" . CRLF;
+        $expects .= "DESCRIPTION:Come spend New Year's Eve with us!" . CRLF;
+        $expects .= "X-ALT-DESC;FMTTYPE=text/html:Come spend New Year's Eve with us!" . CRLF;
+        $expects .= "LAST-MODIFIED;TZID=US/Eastern:20120109T101215" . CRLF;
+        $expects .= "STATUS:" . CRLF;
+        $expects .= "END:VEVENT" . CRLF;
+        $expects .= "END:VCALENDAR";
+        ;
+
+        
+        
         $result = $this->object->readEventbrite();
-        $this->assertContains($expected, $result, 'Problem with iCal data for PMI feed');
+        self::$messages = array_merge(self::$messages, array(print_r($this->object->getEvents())));        
+        $this->assertEquals($expects, $result, 'Problem with iCal data for PMI feed');
+        ;
     }
 
     /**
@@ -127,5 +179,32 @@ class EventbriteICSTest extends PHPUnit_Framework_TestCase {
                 'This test has not been implemented yet.'
         );
     }
+
+}
+
+class MockEventbrite
+{
+    public function user_list_events(){
+        return XmlToEvents::Parse("data/testEvent.xml");
+    }
+}
+
+class XmlToEvents {
+
+	public function Parse ($url) {
+
+		$fileContents= file_get_contents($url, true);
+
+		$fileContents = str_replace(array("\n", "\r", "\t"), '', $fileContents);
+
+		$fileContents = trim(str_replace('"', "'", $fileContents));
+
+		$simpleXml = simplexml_load_string($fileContents);
+
+		$json = json_encode($simpleXml);
+
+		return json_decode($json);
+
+	}
 
 }

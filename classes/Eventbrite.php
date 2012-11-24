@@ -107,6 +107,7 @@ class Eventbrite {
                 throw new Exception( $resp->error->error_message );
             }
         }
+       
         return $resp;
     }
 
