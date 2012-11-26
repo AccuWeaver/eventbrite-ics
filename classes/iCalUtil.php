@@ -7,6 +7,8 @@ class ICalUtil {
         mb_internal_encoding("UTF-8");
     }
 
+    // This splits the line into 75 character lines.
+    // At the moment it really doesn't do anything 
     function ical_split($preamble, $value) {
         // Trim the value
         $retval = $this->encode_ical($value);
@@ -47,7 +49,10 @@ class ICalUtil {
             $lines[] = $retval;
         }
 
-        return join($lines);
+        // FIXME - right now we just join the lines because the 
+        //         actual join is not being used
+        return join($lines, "\n\t");
+        //return join($lines);
     }
 
     function write_item($preamble, $value) {
@@ -71,7 +76,7 @@ class ICalUtil {
 
 
         //  \\          encodes \
-        $retval = preg_replace('/{\\\}/', '\\', $retval);
+        $retval = preg_replace("/(\\\)/", "$1$1", $retval);
         //  \;          encodes ; 
         $retval = preg_replace('/;/', '\;', $retval);
         //  \,          encodes ,

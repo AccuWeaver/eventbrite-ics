@@ -66,10 +66,11 @@ class ConfigTest extends PHPUnit_Framework_TestCase {
         $config = array('app_key' => 'appkeyvalue',
             'user_key' => 'userkeyvalue');
         $this->object->setConfig($config);
-        $this->object->setFileName('../data/testOutputFile.ini');
+        echo getcwd();
+        $this->object->setFileName('data/testOutputFile.ini');
         $this->object->write();
         $this->assertEquals($config, $this->object->read());
-        unlink('../data/testOutputFile.ini');
+        unlink($this->object->getFileName());
   
     }
 

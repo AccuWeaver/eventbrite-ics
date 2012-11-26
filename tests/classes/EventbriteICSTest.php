@@ -52,7 +52,7 @@ class EventbriteICSTest extends PHPUnit_Framework_TestCase {
         $startsWith = "BEGIN:VCALENDAR" . CRLF
                 . "VERSION:2.0" . CRLF
                 . "METHOD:PUBLISH" . CRLF
-                . "PRODID:-//PMI SFBAC//PMICalendar//EN" . CRLF
+                . "PRODID:-//EventbriteICS//EventbriteCalendar//EN" . CRLF
                 . "CALSCALE:GREGORIAN" . CRLF
                 . "X-WR-CALNAME:PMI-SFBAC Eventbrite Calendar" . CRLF
                 . "X-WR-TIMEZONE:America/Los_Angeles" . CRLF
@@ -105,7 +105,7 @@ class EventbriteICSTest extends PHPUnit_Framework_TestCase {
         $expects = "BEGIN:VCALENDAR" . CRLF;
         $expects .= "VERSION:2.0" . CRLF;
         $expects .= "METHOD:PUBLISH" . CRLF;
-        $expects .= "PRODID:-//PMI SFBAC//PMICalendar//EN" . CRLF;
+        $expects .= "PRODID:-//EventbriteICS//EventbriteCalendar//EN" . CRLF;
         $expects .= "CALSCALE:GREGORIAN" . CRLF;
         $expects .= "X-WR-CALNAME:PMI-SFBAC Eventbrite Calendar" . CRLF;
         $expects .= "X-WR-TIMEZONE:America/Los_Angeles" . CRLF;
@@ -132,7 +132,7 @@ class EventbriteICSTest extends PHPUnit_Framework_TestCase {
         $expects .= "ORGANIZER;CN=PMI San Francisco Bay Area Chapter:MAILTO:eventbrite@pmi-sfbac.org" . CRLF;
         $expects .= "UID:908163459" . CRLF;
         $expects .= "URL:Array" . CRLF;
-        $expects .= "CATEGORIES:" . CRLF;
+        $expects .= "CATEGORIES:test" . CRLF;
         $expects .= "CLASS:Public" . CRLF;
         $expects .= "CREATED;TZID=US/Eastern:20121103T124706" . CRLF;
         $expects .= "DTSTART;TZID=US/Eastern:20121231T200000Z" . CRLF;
@@ -141,13 +141,13 @@ class EventbriteICSTest extends PHPUnit_Framework_TestCase {
         $expects .= "DESCRIPTION:Come spend New Year's Eve with us!" . CRLF;
         $expects .= "X-ALT-DESC;FMTTYPE=text/html:Come spend New Year's Eve with us!" . CRLF;
         $expects .= "LAST-MODIFIED;TZID=US/Eastern:20120109T101215" . CRLF;
-        $expects .= "STATUS:" . CRLF;
+        $expects .= "STATUS:draft" . CRLF;
         $expects .= "END:VEVENT" . CRLF;
         $expects .= "BEGIN:VEVENT" . CRLF;
         $expects .= "ORGANIZER;CN=PMI San Francisco Bay Area Chapter:MAILTO:eventbrite@pmi-sfbac.org" . CRLF;
         $expects .= "UID:888888" . CRLF;
         $expects .= "URL:Array" . CRLF;
-        $expects .= "CATEGORIES:" . CRLF;
+        $expects .= "CATEGORIES:test" . CRLF;
         $expects .= "CLASS:Public" . CRLF;
         $expects .= "CREATED;TZID=US/Eastern:20121103T124706" . CRLF;
         $expects .= "DTSTART;TZID=US/Eastern:20121231T200000Z" . CRLF;
@@ -156,7 +156,7 @@ class EventbriteICSTest extends PHPUnit_Framework_TestCase {
         $expects .= "DESCRIPTION:Come spend New Year's Eve with us!" . CRLF;
         $expects .= "X-ALT-DESC;FMTTYPE=text/html:Come spend New Year's Eve with us!" . CRLF;
         $expects .= "LAST-MODIFIED;TZID=US/Eastern:20120109T101215" . CRLF;
-        $expects .= "STATUS:" . CRLF;
+        $expects .= "STATUS:draft" . CRLF;
         $expects .= "END:VEVENT" . CRLF;
         $expects .= "END:VCALENDAR";
         ;

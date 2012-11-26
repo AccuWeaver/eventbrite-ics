@@ -13,6 +13,10 @@
             <modified>2012-01-09 10:12:15</modified>
             <privacy>Public</privacy>
             <url>http://nycparty.eventbrite.com</url>
+            <logo>http://images.eventbrite.com/logos/908163459.jpg</logo>
+            <logo_ssl>https://www.eventbrite.com/php/logo.php?id=908163459.jpg</logo_ssl>
+            <status>draft</status>
+            <category>test</category>
             <venue>
                 <id>1</id>
                 <name>Madison Square Garden</name>
@@ -61,6 +65,10 @@
             <modified>2012-01-09 10:12:15</modified>
             <privacy>Public</privacy>
             <url>http://nycparty.eventbrite.com</url>
+            <logo>http://images.eventbrite.com/logos/908163459.jpg</logo>
+            <logo_ssl>https://www.eventbrite.com/php/logo.php?id=908163459.jpg</logo_ssl>
+            <status>draft</status>            
+            <category>test</category>
             <venue>
                 <id>1</id>
                 <name>Madison Square Garden</name>
@@ -109,6 +117,7 @@
             <modified>2012-01-09 10:12:15</modified>
             <privacy>Public</privacy>
             <url>http://nycparty.eventbrite.com</url>
+            <category>test</category>
             <venue>
                 <id>1</id>
                 <name>Madison Square Garden</name>
@@ -120,6 +129,9 @@
                 <country>United States</country>
                 <country_code>US</country_code>
             </venue>
+            <logo>http://images.eventbrite.com/logos/908163459.jpg</logo>
+            <logo_ssl>https://www.eventbrite.com/php/logo.php?id=908163459.jpg</logo_ssl>
+            <status>draft</status>            
             <organizer>
                 <id>65739440</id>
                 <name>New Year's NYC Team</name>

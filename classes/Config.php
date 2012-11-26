@@ -23,10 +23,18 @@ class Config {
     function setFileName($filename = null) {
         $this->filename = $filename;
     }
+    
+    function getFileName(){
+        return $this->filename;
+    }
 
     function read() {
-        if (parse_ini_file($this->filename)) {
-            $this->config = parse_ini_file($this->filename);
+        try {
+            if (parse_ini_file($this->filename)) {
+                $this->config = parse_ini_file($this->filename);
+            }
+        } catch (Exception $ex) {
+            // We just ignore errors for now ...
         }
         return $this->config;
     }
@@ -42,14 +50,14 @@ class Config {
         return null;
     }
 
-    function setConfig($config = null){
+    function setConfig($config = null) {
         if ($config == null) {
             $this->config = $this->read();
         } else {
             $this->config = $config;
         }
     }
-    
+
     function write_php_ini($array, $file) {
         $res = array();
         foreach ($array as $key => $val) {
@@ -69,9 +77,29 @@ class Config {
                 $res[] = "$key = $val";
         }
         $dataToSave = implode("\r\n", $res);
-        if (! file_put_contents($file, $dataToSave)){
+        if (!$this->safefilerewrite($file, $dataToSave)) {
             throw new ErrorException("Can't write '" . $file . "'");
         }
+    }
+
+    function safefilerewrite($fileName, $dataToSave) {
+        if ($fp = fopen($fileName, 'w')) {
+            $startTime = microtime();
+            do {
+                $canWrite = flock($fp, LOCK_EX);
+                // If lock not obtained sleep for 0 - 100 milliseconds, to avoid collision and CPU load
+                if (!$canWrite)
+                    usleep(round(rand(0, 100) * 1000));
+            } while ((!$canWrite) and ((microtime() - $startTime) < 1000));
+
+            //file was locked so now we can store information
+            if ($canWrite) {
+                $return = fwrite($fp, $dataToSave);
+                flock($fp, LOCK_UN);
+            }
+            fclose($fp);
+        }
+        return $return;
     }
 
 }

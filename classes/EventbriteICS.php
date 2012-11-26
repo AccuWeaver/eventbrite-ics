@@ -25,7 +25,7 @@ class EventbriteICS {
         mb_internal_encoding("UTF-8");
         
         $this->pubdate = strtotime("Now");
-        $this->today = date('Ymd', $pubdate);
+        $this->today = date('Ymd', $this->pubdate);
         $this->setBeginDate(strtotime('-30 day', strtotime("Now")));
         $this->setEndDate(strtotime('+30 day', strtotime("Now")));
 
@@ -175,7 +175,7 @@ class EventbriteICS {
                 }
 
                 // Convert to time 
-                $start_date = strtotime($event->event->start_date, $today);
+                $start_date = strtotime($event->event->start_date, $this->today);
 
                 //writeLog($begin_date . " < " . $start_date . " > " . $end_date);
                 // Check if within next 30 days ...
@@ -217,8 +217,8 @@ class EventbriteICS {
             # Make one for now containing the error message
             $events .= "BEGIN:VEVENT" . CRLF;
             $events .= "URL;VALUE=URI:http://www.pmi-sfbac.org/" . CRLF;
-            $events .= "DTSTART;TZID=" . $this->timezone . ":" . $today . "T120000" . CRLF;
-            $events .= "DTEND;TZID=" . $this->timezone . ":" . $today . "T163000" . CRLF;
+            $events .= "DTSTART;TZID=" . $this->timezone . ":" . $this->today . "T120000" . CRLF;
+            $events .= "DTEND;TZID=" . $this->timezone . ":" . $this->today . "T163000" . CRLF;
             $events .= "SUMMARY:No rows found" . CRLF;
             $events .= "END:VEVENT" . CRLF;
         }
