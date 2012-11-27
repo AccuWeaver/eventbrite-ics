@@ -534,3 +534,8 @@ AddCharset utf-8 .css .js .xml .json .rss .atom
 <IfModule php5_module>
   php_value session.cookie_httponly true
 </IfModule>
+
+# The following is to make the file named eventbrite.ics run as a PHP file.
+<Files eventbrite.ics>
+AddType application/x-httpd-php .ics
+</Files>

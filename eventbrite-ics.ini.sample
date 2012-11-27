@@ -1,0 +1,13 @@
+[Eventbrite API]
+# The app key is from your Eventbrite account
+app_key = XYZZZF7NVIL7KPHPD6H
+
+# This also comes from there
+user_key = 999639172020232618306
+
+[iCal]
+# This is the name that we want the file to come out as
+output_file_name = eventbrite.ics
+
+# This is the default timezone - probably could get this from Eventbrite
+timezone = America/Los_Angeles

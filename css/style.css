@@ -1,0 +1,88 @@
+/* 
+    Document   : style
+    Created on : Nov 26, 2012, 9:16:34 AM
+    Author     : robweaver
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+body {
+    padding: 1em;
+    width: 980px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+header {
+    text-align: center;
+}
+
+footer {
+    clear: both;
+    background: darkseagreen;
+    padding-top: 1em;
+    padding-bottom: 1em;
+    text-align: center;
+}
+
+
+body div {
+    background-color: #FFFFFF;
+}
+label {
+    display: block;
+    font-weight: bold;
+    width: 150px;
+    float: left;
+    text-align: right;
+    padding-right: 5px;
+    clear:both;
+}
+input, select {
+    float: left;
+    width: auto;
+}
+button {
+    padding: 4em;
+}
+.buttons {
+    clear: both;
+    padding: 2em;
+    text-align: center;
+}
+.error {
+    clear: both;
+    display: block;
+    text-align: center;
+}
+
+form {
+    padding-top: 1em;
+    padding-bottom: 1em;
+    
+}
+
+/* all */
+::-webkit-input-placeholder	{
+    color: #aaa !important;
+    font-style: italic !important;
+
+}
+
+:focus::-webkit-input-placeholder{
+    color:transparent !important;
+}
+
+/* For Mozilla */
+:-moz-placeholder {
+    color: #aaa !important;
+    font-style: italic;
+
+}
+
+/* For IE10 */
+:-ms-input-placeholder {
+    color: #aaa !important;
+    font-style: italic;
+
+}

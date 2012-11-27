@@ -1,0 +1,18 @@
+<?php
+ini_set('include_path', ini_get('include_path')
+        . PATH_SEPARATOR
+        . './'
+        . PATH_SEPARATOR
+        . '../'
+        . PATH_SEPARATOR
+        . '../../'
+        . PATH_SEPARATOR
+);
+
+require_once 'classes/EventbriteICS.php';
+
+$eb_ics = new EventbriteICS();
+
+$eb_ics->sendICS();
+
+

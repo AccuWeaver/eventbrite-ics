@@ -9,7 +9,7 @@ define("LOGGING", false);
 
 class EventbriteICS {
 
-    private $config = array();
+    private $config;
     private $eventbrite_client;
     private $events;
     private $logFh;
@@ -23,15 +23,14 @@ class EventbriteICS {
     function __construct() {
         // Make sure we're doing UTF-8 - important for iCalendar
         mb_internal_encoding("UTF-8");
-        
+
         $this->pubdate = strtotime("Now");
         $this->today = date('Ymd', $this->pubdate);
         $this->setBeginDate(strtotime('-30 day', strtotime("Now")));
         $this->setEndDate(strtotime('+30 day', strtotime("Now")));
 
         // Get the configuration object
-        $this->config = new Config();
-        $this->config->read();
+        $this->config = $this->getConfig();
 
         // Get the parameters from the config object ...
         $authentication_tokens = array(
@@ -63,25 +62,46 @@ class EventbriteICS {
         $this->eventbrite_client->auth_tokens = $config;
     }
 
+    public function getConfig() {
+        if ($this->config == null) {
+            $this->config = new Config();
+            $this->config->read();
+        }
+        return $this->config;
+    }
+
+    public function getFileName() {
+        if ($this->outputFileName == null) {
+            $this->getConfig();
+            $this->outputFileName = $this->config->getFileName();
+        }
+        return $this->outputFileName;
+    }
+
+    public function setFileName($output_file_name = 'eventbrite.ics') {
+        $this->getConfig();
+        $this->config->setFileName($output_file_name);
+    }
+
     public function setEventbrite($eventbrite) {
         $this->eventbrite_client = $eventbrite;
     }
 
-    public function setBeginDate($date){
+    public function setBeginDate($date) {
         $this->begin_date = $date;
     }
-    
+
     public function setEndDate($date) {
         $this->end_date = $date;
     }
-    
+
     public function getEvents() {
         return $this->events;
     }
 
     private function sendHeaders() {
         header('Content-type: text/calendar; charset=utf-8');
-        header('Content-Disposition: attachment; filename="eventbrite.ics"');
+        header('Content-Disposition: attachment; filename="' . $this->getFileName() . '"');
     }
 
 #
@@ -125,11 +145,11 @@ class EventbriteICS {
         // FIXME - make the name of the calendar a config value
         //         or look this up from Eventbrite
         $events .= "X-WR-CALNAME:PMI-SFBAC Eventbrite Calendar" . CRLF;
-        
+
         // And the Time Zone should come from Eventbrite and be consistent
         // throughout ...
         $events .= "X-WR-TIMEZONE:" . $this->timezone . CRLF;
-        
+
         // This probably can come from Eventbrite too
         $events .= "X-WR-CALDESC:This is the PMI-SFBAC Eventbrite Calendar" . CRLF;
 
@@ -180,12 +200,12 @@ class EventbriteICS {
                 //writeLog($begin_date . " < " . $start_date . " > " . $end_date);
                 // Check if within next 30 days ...
                 if (($this->begin_date > $start_date) || ($start_date > $this->end_date)) {
-                  $this->writeLog(date('Y-M-d', $start_date) . " start date not in range " . $event->event->title);
-                  continue;
-                  } else {
-                  $this->writeLog(date('Y-M-d', $start_date) . " start date in range " . $event->event->title);
-                  }
-                
+                    $this->writeLog(date('Y-M-d', $start_date) . " start date not in range " . $event->event->title);
+                    continue;
+                } else {
+                    $this->writeLog(date('Y-M-d', $start_date) . " start date in range " . $event->event->title);
+                }
+
                 $start = date('Ymd\THis', strtotime($event->event->start_date));
                 $end = date('Ymd\THis', strtotime($event->event->end_date));
                 $created = date('Ymd\THis', strtotime($event->event->created));
