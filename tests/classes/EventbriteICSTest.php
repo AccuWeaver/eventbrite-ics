@@ -21,11 +21,9 @@ class EventbriteICSTest extends PHPUnit_Framework_TestCase {
      * @var EventbriteICS
      */
     protected $object;
-    
     private $test_data;
-
     static private $messages = array();
-    
+
     /**
      * Sets up the fixture, for example, opens a network connection.
      * This method is called before a test is executed.
@@ -40,7 +38,7 @@ class EventbriteICSTest extends PHPUnit_Framework_TestCase {
      * This method is called after a test is executed.
      */
     protected function tearDown() {
-         echo implode("\n", self::$messages);
+        echo implode("\n", self::$messages);
         $this->object = null;
     }
 
@@ -90,10 +88,10 @@ class EventbriteICSTest extends PHPUnit_Framework_TestCase {
     }
 
     public function testReadEventbriteWithKey() {
-        
-        
+
+
         // Mock the Eventbrite object so we don't have to show our hand ...
-        $this->object->setEventbrite(new MockEventbrite()); 
+        $this->object->setEventbrite(new MockEventbrite());
         $this->object->setBeginDate(strtotime("2012-11-01"));
         $this->object->setEndDate(strtotime("2013-01-01"));
 
@@ -131,40 +129,48 @@ class EventbriteICSTest extends PHPUnit_Framework_TestCase {
         $expects .= "BEGIN:VEVENT" . CRLF;
         $expects .= "ORGANIZER;CN=PMI San Francisco Bay Area Chapter:MAILTO:eventbrite@pmi-sfbac.org" . CRLF;
         $expects .= "UID:908163459" . CRLF;
-        $expects .= "URL:Array" . CRLF;
+        $expects .= "URL:http://dev-win.eventbrite.com/event/1003" . CRLF;
         $expects .= "CATEGORIES:test" . CRLF;
         $expects .= "CLASS:Public" . CRLF;
         $expects .= "CREATED;TZID=US/Eastern:20121103T124706" . CRLF;
         $expects .= "DTSTART;TZID=US/Eastern:20121231T200000Z" . CRLF;
         $expects .= "DTEND;TZID=US/Eastern:20120101T060000Z" . CRLF;
         $expects .= "SUMMARY:Best NYC New Year's Party" . CRLF;
-        $expects .= "DESCRIPTION:Come spend New Year's Eve with us!" . CRLF;
-        $expects .= "X-ALT-DESC;FMTTYPE=text/html:Come spend New Year's Eve with us!" . CRLF;
+        // This gets wrapped because it it longer than the 75 character limit
+        $expects .= "DESCRIPTION:Come spend New Year's Eve with us! http://dev-win.eventbrite.co" .
+                "\n\tm/event/1003" . CRLF;
+        $expects .= "X-ALT-DESC;FMTTYPE=text/html:Come spend New Year's Eve with us!"
+                . '<p><a href="http://dev-win.eventbrite.com/event/1003" target="_blank">http://dev-win.eventbrite.com/event/1003</a></p>'
+                . CRLF;
         $expects .= "LAST-MODIFIED;TZID=US/Eastern:20120109T101215" . CRLF;
         $expects .= "STATUS:draft" . CRLF;
         $expects .= "END:VEVENT" . CRLF;
         $expects .= "BEGIN:VEVENT" . CRLF;
         $expects .= "ORGANIZER;CN=PMI San Francisco Bay Area Chapter:MAILTO:eventbrite@pmi-sfbac.org" . CRLF;
         $expects .= "UID:888888" . CRLF;
-        $expects .= "URL:Array" . CRLF;
+        $expects .= "URL:http://dev-win.eventbrite.com/event/12345" . CRLF;
         $expects .= "CATEGORIES:test" . CRLF;
         $expects .= "CLASS:Public" . CRLF;
         $expects .= "CREATED;TZID=US/Eastern:20121103T124706" . CRLF;
         $expects .= "DTSTART;TZID=US/Eastern:20121231T200000Z" . CRLF;
         $expects .= "DTEND;TZID=US/Eastern:20120101T060000Z" . CRLF;
         $expects .= "SUMMARY:Best NYC New Year's Party" . CRLF;
-        $expects .= "DESCRIPTION:Come spend New Year's Eve with us!" . CRLF;
-        $expects .= "X-ALT-DESC;FMTTYPE=text/html:Come spend New Year's Eve with us!" . CRLF;
+        // This gets wrapped because it it longer than the 75 character limit
+        $expects .= "DESCRIPTION:Come spend New Year's Eve with us! http://dev-win.eventbrite.co" .
+                "\n\tm/event/12345" . CRLF;
+        $expects .= "X-ALT-DESC;FMTTYPE=text/html:Come spend New Year's Eve with us!"
+                . '<p><a href="http://dev-win.eventbrite.com/event/12345" target="_blank">http://dev-win.eventbrite.com/event/12345</a></p>'
+                . CRLF;
         $expects .= "LAST-MODIFIED;TZID=US/Eastern:20120109T101215" . CRLF;
         $expects .= "STATUS:draft" . CRLF;
         $expects .= "END:VEVENT" . CRLF;
         $expects .= "END:VCALENDAR";
         ;
 
-        
-        
+
+
         $result = $this->object->readEventbrite();
-        self::$messages = array_merge(self::$messages, array(print_r($this->object->getEvents())));        
+        self::$messages = array_merge(self::$messages, array(print_r($this->object->getEvents())));
         $this->assertEquals($expects, $result, 'Problem with iCal data for PMI feed');
         ;
     }
@@ -182,29 +188,30 @@ class EventbriteICSTest extends PHPUnit_Framework_TestCase {
 
 }
 
-class MockEventbrite
-{
-    public function user_list_events(){
-        return XmlToEvents::Parse("data/testEvent.xml");
+class MockEventbrite {
+
+    public function user_list_events() {
+        $return = XmlToEvents::Parse("data/testEvent.xml");
+        return $return;
     }
+
 }
 
 class XmlToEvents {
 
-	public function Parse ($url) {
+    public static function Parse($url) {
 
-		$fileContents= file_get_contents($url, true);
+        $fileContents = file_get_contents($url, true);
 
-		$fileContents = str_replace(array("\n", "\r", "\t"), '', $fileContents);
+        $fileContents = str_replace(array("\n", "\r", "\t"), '', $fileContents);
 
-		$fileContents = trim(str_replace('"', "'", $fileContents));
+        $fileContents = trim(str_replace('"', "'", $fileContents));
 
-		$simpleXml = simplexml_load_string($fileContents);
+        $simpleXml = simplexml_load_string($fileContents);
 
-		$json = json_encode($simpleXml);
+        $json = json_encode($simpleXml);
 
-		return json_decode($json);
-
-	}
+        return json_decode($json);
+    }
 
 }

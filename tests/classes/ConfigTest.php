@@ -46,7 +46,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase {
     public function testRead() {
 
         $expected = array();
-        $this->assertEquals($expected, $this->object->read());
+        $this->assertEquals(FALSE, $this->object->read());
 
         $expected = array('key' => 'value');
         $this->object->setFileName('tests/data/testDummyConfig.ini');

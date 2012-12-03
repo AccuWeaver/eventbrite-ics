@@ -214,15 +214,14 @@ class EventbriteICS {
                 $events .= "BEGIN:" . "VEVENT" . CRLF;
                 $events .= "ORGANIZER;CN=PMI San Francisco Bay Area Chapter:MAILTO:eventbrite@pmi-sfbac.org" . CRLF;
                 $events .= "UID:" . $event->event->id . CRLF;
-                $events .= "URL:" . $event->event->url . CRLF;
+                $events .= "URL:" . $this->formatURLText($event->event->url) . CRLF;
                 $events .= "CATEGORIES:" . $event->event->category . CRLF;
                 $events .= "CLASS:" . $event->event->privacy . CRLF;
                 $events .= "CREATED;TZID=" . $event->event->timezone . ":" . $created . CRLF;
                 $events .= "DTSTART;TZID=" . $event->event->timezone . ":" . $start . "Z" . CRLF;
                 $events .= "DTEND;TZID=" . $event->event->timezone . ":" . $end . "Z" . CRLF;
                 $events .= $this->ical_util->write_item("SUMMARY:", $event->event->title) . CRLF;
-                $events .= $this->ical_util->write_item("DESCRIPTION:", $event->event->description) . CRLF;
-                $events .= "X-ALT-DESC;FMTTYPE=text/html:" . $this->ical_util->encode_ical($event->event->description) . CRLF;
+                $events .= $this->getDescription($event->event->description, $event->event->url);
                 $events .= "LAST-MODIFIED;TZID=" . $event->event->timezone . ":" . $modified . CRLF;
                 // Not sure if we need this, or if we could get it from the event.
                 $events .= "STATUS:" . $event->event->status . CRLF;
@@ -252,6 +251,61 @@ class EventbriteICS {
         $events .= "END:VCALENDAR";
 
         return $events;
+    }
+
+    private function formatURLText($url) {
+        if (is_null($url)) {
+            return false;
+        }
+        if (is_scalar($url)) {
+            return $url;
+        }
+        return $url[0];
+    }
+
+    private function formatURLHTML($url) {
+        $newurl = $this->formatURLText($url);
+        if ($newurl) {
+            $newurl = '<a href="' . $newurl . '" target="_blank">' . $newurl . '</a>';
+        }
+        return $newurl;
+    }
+
+    /**
+     *  Format the description and URL into a description 
+     * 
+     */
+    private function getDescriptionText($description, $url) {
+        $new_description = $description;
+        $new_url = $this->formatURLText($url);
+        if ($new_url) {
+            $new_description .= "\n\n" . $new_url;
+        }
+        $returnText = $this->ical_util->write_item("DESCRIPTION:", $new_description);
+        $returnText .= CRLF;
+
+        return $returnText;
+    }
+
+    private function getDescriptionHTML($description, $url) {
+
+        $new_description = $description;
+        $new_url = $this->formatURLHTML($url);
+        
+        if ($new_url) {
+            $new_description .= "<p>" . $new_url . "</p>";
+        }
+
+        $returnHTML = "X-ALT-DESC;FMTTYPE=text/html:";
+        $returnHTML .= $this->ical_util->encode_ical($new_description);
+        $returnHTML .= CRLF;
+        return $returnHTML;
+    }
+
+    private function getDescription($description, $url) {
+        $returnDescription = $this->getDescriptionText($description, $url);
+        $returnDescription .= $this->getDescriptionHTML($description, $url);
+        return $returnDescription;
     }
 
     public function sendICS() {

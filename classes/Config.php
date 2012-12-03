@@ -37,11 +37,13 @@ class Config {
             // We cheat and redirect to the config page ...
             $this->config = false;
         }
-        if (!strpos($_SERVER['REQUEST_URI'], 'index')) {
-            if (!$this->config) {
-                header('Location: index.php');
-                ob_clean();
-                flush();
+        if (isset($_SERVER['REQUEST_URI'])) {
+            if (!strpos($_SERVER['REQUEST_URI'], 'index')) {
+                if (!$this->config) {
+                    header('Location: index.php');
+                    ob_clean();
+                    flush();
+                }
             }
         }
         return $this->config;
