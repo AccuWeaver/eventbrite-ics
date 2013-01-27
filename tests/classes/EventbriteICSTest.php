@@ -133,8 +133,8 @@ class EventbriteICSTest extends PHPUnit_Framework_TestCase {
         $expects .= "CATEGORIES:test" . CRLF;
         $expects .= "CLASS:Public" . CRLF;
         $expects .= "CREATED;TZID=US/Eastern:20121103T124706" . CRLF;
-        $expects .= "DTSTART;TZID=US/Eastern:20121231T200000Z" . CRLF;
-        $expects .= "DTEND;TZID=US/Eastern:20120101T060000Z" . CRLF;
+        $expects .= "DTSTART;TZID=US/Eastern:20121231T200000" . CRLF;
+        $expects .= "DTEND;TZID=US/Eastern:20120101T060000" . CRLF;
         $expects .= "SUMMARY:Best NYC New Year's Party" . CRLF;
         // This gets wrapped because it it longer than the 75 character limit
         $expects .= "DESCRIPTION:Come spend New Year's Eve with us! http://dev-win.eventbrite.co" .
@@ -152,8 +152,8 @@ class EventbriteICSTest extends PHPUnit_Framework_TestCase {
         $expects .= "CATEGORIES:test" . CRLF;
         $expects .= "CLASS:Public" . CRLF;
         $expects .= "CREATED;TZID=US/Eastern:20121103T124706" . CRLF;
-        $expects .= "DTSTART;TZID=US/Eastern:20121231T200000Z" . CRLF;
-        $expects .= "DTEND;TZID=US/Eastern:20120101T060000Z" . CRLF;
+        $expects .= "DTSTART;TZID=US/Eastern:20121231T200000" . CRLF;
+        $expects .= "DTEND;TZID=US/Eastern:20120101T060000" . CRLF;
         $expects .= "SUMMARY:Best NYC New Year's Party" . CRLF;
         // This gets wrapped because it it longer than the 75 character limit
         $expects .= "DESCRIPTION:Come spend New Year's Eve with us! http://dev-win.eventbrite.co" .

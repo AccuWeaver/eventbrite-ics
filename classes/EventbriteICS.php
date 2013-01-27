@@ -218,8 +218,8 @@ class EventbriteICS {
                 $events .= "CATEGORIES:" . $event->event->category . CRLF;
                 $events .= "CLASS:" . $event->event->privacy . CRLF;
                 $events .= "CREATED;TZID=" . $event->event->timezone . ":" . $created . CRLF;
-                $events .= "DTSTART;TZID=" . $event->event->timezone . ":" . $start . "Z" . CRLF;
-                $events .= "DTEND;TZID=" . $event->event->timezone . ":" . $end . "Z" . CRLF;
+                $events .= "DTSTART;TZID=" . $event->event->timezone . ":" . $start . CRLF;
+                $events .= "DTEND;TZID=" . $event->event->timezone . ":" . $end .  CRLF;
                 $events .= $this->ical_util->write_item("SUMMARY:", $event->event->title) . CRLF;
                 $events .= $this->getDescription($event->event->description, $event->event->url);
                 $events .= "LAST-MODIFIED;TZID=" . $event->event->timezone . ":" . $modified . CRLF;
