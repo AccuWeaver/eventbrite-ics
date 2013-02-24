@@ -45,6 +45,8 @@
         $app_key = $config->getParam('app_key');
         $user_key = $config->getParam('user_key');
         $output_file_name = $config->getParam('output_file_name');
+        $before_period = $config->getParam('before_period');
+        $after_period = $config->getParam('after_period');
 
         // Get the user data ...
         $eb_client = new Eventbrite(array('app_key' => $app_key,
@@ -125,17 +127,11 @@
                 </select>                
                 <label>On query show this many days earlier:</label>
                 <select name="before_period" >
-                    <option value="1 month">1 month</option>
-                    <option value="3 month">3 month</option>
-                    <option value="6 month">6 month</option>
-                    <option value="12 month">12 month</option>
+                    <?php echo $config->displayTimeOptions($before_period); ?>
                 </select>                
                 <label>On query show this many days later:</label>
                 <select name="after_period" >
-                    <option value="1 month">1 month</option>
-                    <option value="3 month">3 month</option>
-                    <option value="6 month">6 month</option>
-                    <option value="12 month">12 month</option>
+                    <?php echo $config->displayTimeOptions($after_period); ?>
                 </select>
                 <br clear="both" />
                 <div class="buttons">
