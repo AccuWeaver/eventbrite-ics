@@ -114,14 +114,13 @@ class Config {
 
     /*
      * The following was taken from http://e-tel.eu/post/10489929846/create-a-time-zone-drop-down-list-ddl-in-php
-     */
-
-    /**
+     *
      * returns a HTML formated TimeZone select
      *
      * @param $selectedTimeZone string The timezone marked as "selected"
      * @return string
      */
+
     function displayTimeZoneSelect($selectedTimeZone = 'America/Los_Angeles') {
         $countryCodes = $this->getCountryCodes();
         $return = null;
@@ -147,6 +146,28 @@ class Config {
             }
         }
 
+        return $return;
+    }
+
+    /**
+     * Write the options for time period (before and after) ..
+     * 
+     * @param type $selectedTimeOptions
+     */
+    function displayTimeOptions($selectedTimeOptions = '1 Month') {
+        $options = array(
+            "1 Month" => "1 Month",
+            "3 Month" => "3 Month",
+            "6 Month" => "6 Month",
+            "12 Month" => "12 Month"
+        );
+        $return = null;
+        foreach ($options as $option => $value) {
+            $selected = ( ($value == $selectedTimeOptions) ? ' selected="selected"' : null );
+            $return .= '<option value="' . $value . '"' . $selected . '>'
+                    . $value
+                    . '</option>' . PHP_EOL;
+        }
         return $return;
     }
 

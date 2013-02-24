@@ -26,11 +26,21 @@ class EventbriteICS {
 
         $this->pubdate = strtotime("Now");
         $this->today = date('Ymd', $this->pubdate);
-        $this->setBeginDate(strtotime('-30 day', strtotime("Now")));
-        $this->setEndDate(strtotime('+30 day', strtotime("Now")));
-
-        // Get the configuration object
+                // Get the configuration object
         $this->config = $this->getConfig();
+
+        // Set the begin and end date based on parameters ...
+        $before = '1 month';
+        if ($this->config->getParam('before_period')){
+            $before = $this->config->getParam('before_period');
+        }
+        $after = '1 month';
+        if ($this->config->getParam('after_period')){
+            $after = $this->config->getParam('after_period');
+        }
+        
+        $this->setBeginDate(strtotime('-' . $before, strtotime("Now")));
+        $this->setEndDate(strtotime('+' . $after, strtotime("Now")));
 
         // Get the parameters from the config object ...
         $authentication_tokens = array(

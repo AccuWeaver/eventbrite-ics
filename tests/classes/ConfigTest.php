@@ -36,7 +36,6 @@ class ConfigTest extends PHPUnit_Framework_TestCase {
      */
     protected function tearDown() {
         $this->object = null;
-        
     }
 
     /**
@@ -45,8 +44,13 @@ class ConfigTest extends PHPUnit_Framework_TestCase {
      */
     public function testRead() {
 
-        $expected = array();
-        $this->assertEquals(FALSE, $this->object->read());
+        $expected = array('app_key' => 'ddsfds'
+            , 'user_key' => 'sfds'
+            , 'output_file_name' => 'sdfsd.ics'
+            , 'timezone' => 'America/Los_Angeles'
+            , 'before_period' => '12 month'
+            , 'after_period' => '1 month');
+        $this->assertEquals($expected, $this->object->read());
 
         $expected = array('key' => 'value');
         $this->object->setFileName('tests/data/testDummyConfig.ini');
@@ -71,7 +75,6 @@ class ConfigTest extends PHPUnit_Framework_TestCase {
         $this->object->write();
         $this->assertEquals($config, $this->object->read());
         unlink($this->object->getFileName());
-  
     }
 
     /**
@@ -84,7 +87,21 @@ class ConfigTest extends PHPUnit_Framework_TestCase {
         $this->object->setConfig($config);
         $this->assertEquals('appkeyvalue', $this->object->getParam('app_key'));
         $this->assertEquals('userkeyvalue', $this->object->getParam('user_key'));
-        
+    }
+
+    public function testDisplayTimeOptions() {
+        $expected = "<option value=\"1 Month\" selected=\"selected\">1 Month</option>
+<option value=\"3 Month\">3 Month</option>
+<option value=\"6 Month\">6 Month</option>
+<option value=\"12 Month\">12 Month</option>
+";
+        $this->assertEquals($expected, $this->object->displayTimeOptions());
+        $expected = "<option value=\"1 Month\">1 Month</option>
+<option value=\"3 Month\">3 Month</option>
+<option value=\"6 Month\">6 Month</option>
+<option value=\"12 Month\" selected=\"selected\">12 Month</option>
+";
+        $this->assertEquals($expected, $this->object->displayTimeOptions('12 Month'));
     }
 
 }

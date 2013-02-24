@@ -33,6 +33,9 @@
             $params['user_key'] = $_POST['user_key'];
             $params['output_file_name'] = $_POST['output_file_name'];
             $params['timezone'] = $_POST['timezone'];
+            $params['before_period'] = $_POST['before_period'];
+            $params['after_period'] = $_POST['after_period'];
+            
             $config->setConfig($params);
             $config->write();
         }
@@ -119,6 +122,20 @@
                 <label>Time zone:</label>
                 <select name="timezone" >
                     <?php echo $config->displayTimeZoneSelect(); ?>
+                </select>                
+                <label>On query show this many days earlier:</label>
+                <select name="before_period" >
+                    <option value="1 month">1 month</option>
+                    <option value="3 month">3 month</option>
+                    <option value="6 month">6 month</option>
+                    <option value="12 month">12 month</option>
+                </select>                
+                <label>On query show this many days later:</label>
+                <select name="after_period" >
+                    <option value="1 month">1 month</option>
+                    <option value="3 month">3 month</option>
+                    <option value="6 month">6 month</option>
+                    <option value="12 month">12 month</option>
                 </select>
                 <br clear="both" />
                 <div class="buttons">
