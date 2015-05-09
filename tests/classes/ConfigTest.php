@@ -44,12 +44,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase {
      */
     public function testRead() {
 
-        $expected = array('app_key' => 'ddsfds'
-            , 'user_key' => 'sfds'
-            , 'output_file_name' => 'sdfsd.ics'
-            , 'timezone' => 'America/Los_Angeles'
-            , 'before_period' => '12 month'
-            , 'after_period' => '1 month');
+        $expected = false;
         $this->assertEquals($expected, $this->object->read());
 
         $expected = array('key' => 'value');

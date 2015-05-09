@@ -2,13 +2,24 @@
 
 
 class ICalUtil {
-     
+    /**
+     * Constructor
+     */
     function __construct() {
         mb_internal_encoding("UTF-8");
     }
 
-    // This splits the line into 75 character lines.
-    // At the moment it really doesn't do anything 
+    // 
+    /**
+     * This is supposed to split the line into 75 character lines to follow 
+     * the standard.
+     * 
+     * At the moment it really doesn't do anything much.
+     * 
+     * @param type $preamble
+     * @param type $value
+     * @return type
+     */
     function ical_split($preamble, $value) {
         // Trim the value
         $retval = $this->encode_ical($value);
@@ -55,11 +66,22 @@ class ICalUtil {
         //return join($lines);
     }
 
+    /**
+     * 
+     * @param type $preamble
+     * @param type $value
+     * @return string
+     */
     function write_item($preamble, $value) {
         $item = $preamble . $this->ical_split($preamble, $value);
         return $item;
     }
 
+    /**
+     * 
+     * @param type $value
+     * @return type
+     */
     function encode_ical($value) {
         // Trim the value
         $retval = trim($value);
@@ -86,4 +108,4 @@ class ICalUtil {
 
 }
 
-?>
+

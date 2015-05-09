@@ -20,6 +20,9 @@ class EventbriteICS {
     private $begin_date;
     private $end_date;
 
+    /**
+     * Constructor
+     */
     function __construct() {
         // Make sure we're doing UTF-8 - important for iCalendar
         mb_internal_encoding("UTF-8");
@@ -67,11 +70,19 @@ class EventbriteICS {
         $this->eventbrite_client = new Eventbrite($authentication_tokens);
     }
 
+    /**
+     * Set Config
+     * @param type $config
+     */
     public function setConfig($config = array()) {
         $this->config = $config;
         $this->eventbrite_client->auth_tokens = $config;
     }
 
+    /**
+     * Get Config
+     * @return type
+     */
     public function getConfig() {
         if ($this->config == null) {
             $this->config = new Config();
@@ -80,6 +91,11 @@ class EventbriteICS {
         return $this->config;
     }
 
+    /**
+     * Get file name 
+     * 
+     * @return type
+     */
     public function getFileName() {
         if ($this->outputFileName == null) {
             $this->getConfig();
@@ -88,27 +104,51 @@ class EventbriteICS {
         return $this->outputFileName;
     }
 
+    /**
+     * Set file name
+     * 
+     * @param type $output_file_name
+     */
     public function setFileName($output_file_name = 'eventbrite.ics') {
         $this->getConfig();
         $this->config->setFileName($output_file_name);
     }
 
+    /**
+     * 
+     * @param type $eventbrite
+     */
     public function setEventbrite($eventbrite) {
         $this->eventbrite_client = $eventbrite;
     }
 
+    /**
+     * 
+     * @param type $date
+     */
     public function setBeginDate($date) {
         $this->begin_date = $date;
     }
 
+    /**
+     * 
+     * @param type $date
+     */
     public function setEndDate($date) {
         $this->end_date = $date;
     }
 
+    /**
+     * 
+     * @return type
+     */
     public function getEvents() {
         return $this->events;
     }
 
+    /**
+     * 
+     */
     private function sendHeaders() {
         header('Content-type: text/calendar; charset=utf-8');
         header('Content-Disposition: attachment; filename="' . $this->getFileName() . '"');
@@ -119,6 +159,10 @@ class EventbriteICS {
 #
 #
 
+    /**
+     * 
+     * @return string
+     */
     public function readEventbrite() {
         if (LOGGING) {
             // Logging file handle
@@ -263,6 +307,11 @@ class EventbriteICS {
         return $events;
     }
 
+    /**
+     * 
+     * @param type $url
+     * @return boolean
+     */
     private function formatURLText($url) {
         if (is_null($url)) {
             return false;
@@ -273,6 +322,11 @@ class EventbriteICS {
         return $url[0];
     }
 
+    /**
+     * 
+     * @param type $url
+     * @return string
+     */
     private function formatURLHTML($url) {
         $newurl = $this->formatURLText($url);
         if ($newurl) {
@@ -297,6 +351,12 @@ class EventbriteICS {
         return $returnText;
     }
 
+    /**
+     * 
+     * @param type $description
+     * @param type $url
+     * @return type
+     */
     private function getDescriptionHTML($description, $url) {
 
         $new_description = $description;
@@ -312,17 +372,30 @@ class EventbriteICS {
         return $returnHTML;
     }
 
+    /**
+     * 
+     * @param type $description
+     * @param type $url
+     * @return type
+     */
     private function getDescription($description, $url) {
         $returnDescription = $this->getDescriptionText($description, $url);
         $returnDescription .= $this->getDescriptionHTML($description, $url);
         return $returnDescription;
     }
 
+    /**
+     * 
+     */
     public function sendICS() {
         $this->sendHeaders();
         echo $this->readEventbrite();
     }
 
+    /**
+     * 
+     * @param type $logText
+     */
     private function writeLog($logText) {
         if (LOGGING) {
             fwrite($this->logFh, print_r($logText, true) . "\n");

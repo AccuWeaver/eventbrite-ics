@@ -1,14 +1,9 @@
 <?php
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 /**
  * Description of Config
  *
- * @author newadminaccount
+ * @author Rob Weaver rob@accuweaver.com
  */
 class Config {
 
@@ -16,18 +11,35 @@ class Config {
     private $config = false;
     private $filename = "eventbrite-ics.ini";
 
+    /**
+     * Constructor
+     */
     function __construct() {
         
     }
 
+    /**
+     * Set the file name
+     * 
+     * @param String $filename
+     */
     function setFileName($filename = null) {
         $this->filename = $filename;
     }
 
+    /**
+     * Get the file name
+     * @return String
+     */
     function getFileName() {
         return $this->filename;
     }
 
+    /**
+     * Read the configuration
+     * 
+     * @return Config
+     */
     function read() {
         try {
             if (parse_ini_file($this->filename)) {
@@ -49,10 +61,18 @@ class Config {
         return $this->config;
     }
 
+    /**
+     * Write to the configuration file
+     */
     function write() {
         $this->write_php_ini($this->config, $this->filename);
     }
 
+    /**
+     * Get a parameter by key
+     * @param string $key
+     * @return string
+     */
     function getParam($key = null) {
         if (isset($this->config[$key])) {
             return $this->config[$key];
@@ -60,6 +80,11 @@ class Config {
         return null;
     }
 
+    /**
+     * Set the Config 
+     * 
+     * @param Config $config
+     */
     function setConfig($config = null) {
         if ($config == null) {
             $this->config = $this->read();
@@ -68,6 +93,12 @@ class Config {
         }
     }
 
+    /**
+     * Write the PHP INI (key value pairs)
+     * @param array $array - key value pairs
+     * @param type $file - file to write them to
+     * @throws ErrorException
+     */
     function write_php_ini($array, $file) {
         $res = array();
         foreach ($array as $key => $val) {
@@ -82,9 +113,9 @@ class Config {
                         $res[] = "$skey = $sval";
                     }
                 }
-            }
-            else
+            } else {
                 $res[] = "$key = $val";
+            }
         }
         $dataToSave = implode("\r\n", $res);
         if (!$this->safefilerewrite($file, $dataToSave)) {
@@ -92,6 +123,13 @@ class Config {
         }
     }
 
+    /**
+     * Safe file rewrite to avoid problems with locking
+     * 
+     * @param type $fileName
+     * @param type $dataToSave
+     * @return type
+     */
     function safefilerewrite($fileName, $dataToSave) {
         if ($fp = fopen($fileName, 'w')) {
             $startTime = microtime();
@@ -449,4 +487,4 @@ class Config {
 
 }
 
-?>
+
