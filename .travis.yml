@@ -5,3 +5,6 @@ php:
   - 5.6
   - hhvm
   - nightly
+# omitting "script:" will default to phpunit
+# use the $DB env variable to determine the phpunit.xml to use
+script: phpunit tests
