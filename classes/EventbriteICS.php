@@ -7,6 +7,9 @@ require_once('Config.php');
 define("CRLF", "\r\n");
 define("LOGGING", false);
 
+/**
+ * Eventbrite ICS Class
+ */
 class EventbriteICS {
 
     private $config;

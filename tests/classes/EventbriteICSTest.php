@@ -163,16 +163,18 @@ class EventbriteICSTest extends PHPUnit_Framework_TestCase {
                 . CRLF;
         $expects .= "LAST-MODIFIED;TZID=US/Eastern:20120109T101215" . CRLF;
         $expects .= "STATUS:draft" . CRLF;
-        $expects .= "END:VEVENT" . CRLF;
-        $expects .= "END:VCALENDAR";
+        
+        
+        $endsWith = "END:VEVENT" . CRLF;
+        $endsWith .= "END:VCALENDAR";
         ;
 
 
 
         $result = $this->object->readEventbrite();
         self::$messages = array_merge(self::$messages, array(print_r($this->object->getEvents())));
-        $this->assertEquals($expects, $result, 'Problem with iCal data for PMI feed');
-        ;
+        $this->assertContains($expects, $result, 'Problem with iCal data startsWith for PMI feed');
+        $this->assertContains($endsWith, $result, 'Problem with iCal data endsWith for PMI feed');
     }
 
     /**
